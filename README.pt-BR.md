@@ -12,6 +12,24 @@ Transforma um Fire TV Stick numa central de monitoramento de câmeras. É um app
 
 > As imagens das câmeras nos prints estão borradas de propósito.
 
+> ⚠️ **Aviso:** este é um projeto pessoal, fornecido **como está, sem nenhuma garantia**. O uso é por sua conta e risco. O autor **não se responsabiliza** por qualquer dano, perda de dados, problema de segurança ou mau funcionamento causado pela instalação ou pelo uso deste app.
+>
+> Ele **só foi testado num Fire TV Stick HD** (modelo AFTSS, Fire OS 7), **instalado via sideload**. Outros aparelhos podem se comportar de outro jeito ou nem funcionar.
+
+## Baixar e instalar
+
+1. Baixe o `cam-firestick-vX.Y.Z.apk` mais recente na página de [Releases](https://github.com/FilipFelipe/cam-firestick/releases). Cada versão traz o hash SHA-256 para você conferir o arquivo.
+2. Instale no Fire TV de **uma** destas formas.
+
+**Opção A: app Downloader (sem computador)**
+1. No Fire TV, instale o **Downloader** (da AFTVnews) pela Appstore da Amazon.
+2. Vá em *Configurações → Minha Fire TV → Opções do desenvolvedor → Instalar apps desconhecidos* e ative o **Downloader**. Se esse menu não aparecer, abra *Minha Fire TV → Sobre* e selecione o nome do aparelho 7 vezes para liberar as *Opções do desenvolvedor*.
+3. Abra o Downloader, digite o link do APK que está na página de Releases e instale.
+
+**Opção B: ADB pelo computador.** Veja [Instalar no Fire TV](#instalar-no-fire-tv) mais abaixo.
+
+Depois de instalar, abra o **Central de Câmeras**. Ele mostra um QR code: leia com o celular, que precisa estar no mesmo Wi-Fi, e adicione as suas câmeras.
+
 ## Funcionalidades
 
 - **Mosaico em páginas**: até 4 câmeras ao vivo por página, que é o limite de decodificadores do Fire TV Stick HD. O layout se adapta à quantidade de câmeras da página:
@@ -59,7 +77,7 @@ rtsp://usuario:senha@<ip>:554/cam/realmonitor?channel=<n>&subtype=<0|1>
 - **Outras marcas**: cole a URL RTSP completa em *Avançado*, na página de configuração.
 - **Áudio**: AAC é o que funciona melhor. Se uma câmera ficar sem som, mude o codec de áudio dela para AAC.
 
-## Compilar
+## Compilar o código
 
 Precisa do JDK 17 a 21 e do Android SDK (os dois vêm com o Android Studio).
 

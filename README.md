@@ -12,6 +12,24 @@ Turn a Fire TV Stick into a live security-camera wall. A lightweight native Andr
 
 > Camera footage in the screenshots is intentionally blurred.
 
+> ⚠️ **Disclaimer:** this is a personal hobby project, provided **as is, without warranty of any kind**. Use it at your own risk. The author is **not responsible** for any damage, data loss, security issue or malfunction caused by installing or using this app.
+>
+> It has **only been tested on a Fire TV Stick HD** (model AFTSS, Fire OS 7), **installed via sideload**. Other devices may behave differently or may not work at all.
+
+## Download and install
+
+1. Download the latest `cam-firestick-vX.Y.Z.apk` from the [Releases](https://github.com/FilipFelipe/cam-firestick/releases) page. Each release lists a SHA-256 checksum you can use to verify the file.
+2. Install it on the Fire TV with **one** of these options.
+
+**Option A: Downloader app (no computer needed)**
+1. On the Fire TV, install **Downloader** (by AFTVnews) from the Amazon Appstore.
+2. Go to *Settings → My Fire TV → Developer options → Install unknown apps* and turn **Downloader** on. If that menu doesn't appear, open *My Fire TV → About* and select the device name 7 times to unlock *Developer options*.
+3. Open Downloader, type the APK link from the Releases page and install it.
+
+**Option B: ADB from a computer.** See [Install on a Fire TV](#install-on-a-fire-tv) below.
+
+After installing, open **Central de Câmeras**. It shows a QR code: scan it with your phone, which must be on the same Wi-Fi, and add your cameras.
+
 ## Features
 
 - **Paged grid**: up to 4 live cameras per page, which is the hardware decoder limit of the Fire TV Stick HD. The layout adapts to how many cameras a page has:
@@ -59,7 +77,7 @@ rtsp://user:pass@<ip>:554/cam/realmonitor?channel=<n>&subtype=<0|1>
 - **Other brands**: paste the full RTSP URL under *Advanced* on the setup page.
 - **Audio**: AAC works best. If a camera has no sound, switch its audio codec to AAC.
 
-## Build
+## Build from source
 
 Requires JDK 17–21 and the Android SDK (both ship with Android Studio).
 

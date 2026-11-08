@@ -6,3 +6,10 @@ local.properties
 .DS_Store
 captures/
 .kotlin/
+
+# Assinatura de release (nunca versionar)
+keystore.properties
+*.jks
+*.keystore
+# APKs gerados para distribuição
+dist/

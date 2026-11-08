@@ -1,6 +1,16 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+}
+
+val appVersionName = "0.1.0"
+val appVersionCode = 1
+
+// Chave de release: keystore.properties na raiz (NÃO versionado). Sem ele, o release usa a chave de debug.
+val keystoreProps = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
 }
 
 android {
@@ -8,18 +18,30 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.filip.camfirestick"
+        applicationId = "io.github.filipfelipe.centraldecameras"
         minSdk = 25          // Fire OS 6+
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = appVersionCode
+        versionName = appVersionName
+        // Permite instalar um build de teste ao lado do app oficial: ./gradlew -PappIdSuffix=.test ...
+        (project.findProperty("appIdSuffix") as String?)?.let { applicationIdSuffix = it }
+    }
+
+    signingConfigs {
+        if (!keystoreProps.isEmpty) {
+            create("release") {
+                storeFile = file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Para instalar via sideload sem configurar keystore:
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 
@@ -30,6 +52,10 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+base {
+    archivesName.set("cam-firestick-v$appVersionName")
 }
 
 dependencies {
