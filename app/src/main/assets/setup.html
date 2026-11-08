@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Câmeras da TV</title>
+<style>
+  :root { --bg:#0f1418; --card:#1a2228; --line:#2c3a44; --fg:#e8eef2; --mut:#8a99a6; --acc:#2ea8ff; --bad:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0 auto; max-width:640px; padding:16px; background:var(--bg); color:var(--fg); font:16px system-ui,-apple-system,sans-serif; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  .sub { color:var(--mut); margin:0 0 12px; font-size:14px; }
+  .card { background:var(--card); border-radius:12px; padding:14px; margin:12px 0; }
+  .head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .head b { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  label { display:block; font-size:13px; color:var(--mut); margin:10px 0 4px; }
+  input, select { width:100%; padding:11px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font-size:16px; }
+  select { appearance:none; -webkit-appearance:none; }
+  .row { display:flex; gap:8px; } .row > * { flex:1; min-width:0; }
+  button { padding:12px 14px; border:0; border-radius:8px; font-size:16px; background:var(--line); color:var(--fg); }
+  .primary { background:var(--acc); color:#001626; font-weight:600; width:100%; margin-top:8px; }
+  .icon { padding:6px 10px; }
+  .del { background:transparent; color:var(--bad); padding:6px 8px; }
+  details summary { color:var(--mut); font-size:13px; margin-top:12px; }
+  .chip { display:inline-block; margin:4px 4px 0 0; padding:9px 14px; border-radius:20px; background:var(--line); }
+  .pages { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .pages span { font-size:13px; padding:4px 10px; border-radius:12px; background:var(--line); color:var(--mut); }
+  .pages span.over { background:#4a1f22; color:var(--bad); }
+  #msg, #found p { color:var(--mut); }
+  #msg.err { color:var(--bad); }
+</style>
+</head>
+<body>
+<h1>📹 Câmeras da TV</h1>
+<p class="sub">As alterações aparecem na TV ao tocar em Salvar.</p>
+
+<div class="card">
+  <b>Login padrão</b>
+  <p class="sub" style="margin:4px 0 0">Vale para as câmeras com usuário/senha em branco.</p>
+  <div class="row">
+    <div><label>Usuário</label><input id="du" value="admin" autocapitalize="off"></div>
+    <div><label>Senha</label><input id="dp" type="password" placeholder="senha"></div>
+  </div>
+</div>
+
+<div class="card">
+  <b>Exibição</b>
+  <p class="sub" style="margin:4px 0 0">Até 4 câmeras por página. 1 = tela cheia, 2 = tela dividida, 3–4 = 2x2.</p>
+  <div class="row">
+    <div>
+      <label>Ronda automática</label>
+      <select id="tour">
+        <option value="0">Desligada</option>
+        <option value="5">5 s</option>
+        <option value="10">10 s</option>
+        <option value="15">15 s</option>
+        <option value="30">30 s</option>
+        <option value="60">1 min</option>
+      </select>
+    </div>
+    <div>
+      <label>Ronda por</label>
+      <select id="tourMode">
+        <option value="page">Página</option>
+        <option value="camera">Câmera (tela cheia)</option>
+      </select>
+    </div>
+  </div>
+  <div class="pages" id="summary"></div>
+</div>
+
+<div id="list"></div>
+
+<div class="row">
+  <button onclick="add()">+ Adicionar</button>
+  <button onclick="scan()">🔍 Procurar na rede</button>
+</div>
+<div id="found"></div>
+
+<p id="msg"></p>
+<button class="primary" onclick="save()">Salvar e ver na TV</button>
+
+<script>
+const MAX_PER_PAGE = 4;
+const t = new URLSearchParams(location.search).get('t') || '';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cams = [];
+
+function perPage() {
+  const n = {};
+  cams.forEach(c => { const p = +c.page; if (p > 0) n[p] = (n[p] || 0) + 1; });
+  return n;
+}
+function pageCount() {
+  return Math.max(2, Math.ceil(cams.length / MAX_PER_PAGE) + 1, ...cams.map(c => +c.page || 0));
+}
+function firstFreePage() {
+  const n = perPage();
+  for (let p = 1; ; p++) if ((n[p] || 0) < MAX_PER_PAGE) return p;
+}
+function nextName() {
+  const used = new Set(cams.map(c => c.name));
+  let n = 1;
+  while (used.has('Câmera ' + n)) n++;
+  return 'Câmera ' + n;
+}
+
+function field(i, k, label, extra = '') {
+  return `<div><label>${label}</label><input data-i="${i}" data-k="${k}" value="${esc(cams[i][k])}" ${extra}></div>`;
+}
+function select(i, k, label, opts) {
+  const cur = String(cams[i][k]);
+  return `<div><label>${label}</label><select data-i="${i}" data-k="${k}">` +
+    opts.map(([v, txt]) => `<option value="${v}" ${String(v) === cur ? 'selected' : ''}>${txt}</option>`).join('') +
+    `</select></div>`;
+}
+
+function renderSummary() {
+  const n = perPage();
+  const pages = Object.keys(n).map(Number).sort((a, b) => a - b);
+  const hidden = cams.filter(c => +c.page === 0).length;
+  $('summary').innerHTML =
+    pages.map(p => `<span class="${n[p] > MAX_PER_PAGE ? 'over' : ''}">Página ${p}: ${n[p]}</span>`).join('') +
+    (hidden ? `<span>Ocultas: ${hidden}</span>` : '');
+}
+
+function render() {
+  const pageOpts = [[0, 'Não exibir']].concat(Array.from({ length: pageCount() }, (_, k) => [k + 1, 'Página ' + (k + 1)]));
+  const rotOpts = [[0, '0°'], [90, '90°'], [180, '180°'], [270, '270°']];
+  $('list').innerHTML = cams.map((c, i) => `
+    <div class="card">
+      <div class="head">
+        <b>${esc(c.name || 'Câmera ' + (i + 1))}</b>
+        <button class="icon" onclick="move(${i},-1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="icon" onclick="move(${i},1)" ${i === cams.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="del" onclick="del(${i})">Remover</button>
+      </div>
+      ${field(i, 'name', 'Nome')}
+      <div class="row">
+        ${field(i, 'host', 'IP', 'autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="192.168.0.20"')}
+        ${field(i, 'channel', 'Canal', 'inputmode="numeric" style="max-width:90px"')}
+      </div>
+      <div class="row">
+        ${select(i, 'page', 'Página', pageOpts)}
+        ${select(i, 'rotation', 'Rotação', rotOpts)}
+      </div>
+      <div class="row">
+        ${field(i, 'user', 'Usuário', 'placeholder="padrão" autocapitalize="off"')}
+        <div><label>Senha</label><input data-i="${i}" data-k="password" type="password" value="${esc(c.password)}"
+             placeholder="${c.hasPassword ? '•••• (mantida)' : 'padrão'}"></div>
+      </div>
+      <details><summary>Avançado</summary>
+        ${field(i, 'port', 'Porta RTSP', 'inputmode="numeric"')}
+        ${field(i, 'customUrl', 'URL RTSP completa (outras marcas; substitui os campos acima)', 'placeholder="rtsp://..." autocapitalize="off"')}
+      </details>
+    </div>`).join('');
+  renderSummary();
+}
+
+function onEdit(e) {
+  const { i, k } = e.target.dataset;
+  if (i === undefined) return;
+  if (k === 'host' && e.target.value.includes(',')) e.target.value = e.target.value.replace(/,/g, '.'); // teclado pt-BR
+  cams[i][k] = e.target.value;
+  if (e.target.tagName === 'SELECT') render(); else if (k === 'name') renderSummary();
+}
+document.addEventListener('input', onEdit);
+document.addEventListener('change', e => { if (e.target.tagName === 'SELECT') onEdit(e); });
+
+function add(host = '') {
+  cams.push({ id:'', name:nextName(), host, port:554, channel:1, user:'', password:'', customUrl:'',
+              hasPassword:false, rotation:0, page:firstFreePage() });
+  render();
+}
+function del(i) { cams.splice(i, 1); render(); }
+function move(i, d) {
+  const j = i + d;
+  if (j < 0 || j >= cams.length) return;
+  [cams[i], cams[j]] = [cams[j], cams[i]];
+  render();
+}
+
+async function api(path, opt) {
+  const r = await fetch(path + (path.includes('?') ? '&' : '?') + 't=' + encodeURIComponent(t), opt);
+  if (r.status === 403) throw new Error('Código expirado: leia o QR da TV de novo.');
+  if (!r.ok) throw new Error('Erro ' + r.status);
+  return r.json();
+}
+
+function setMsg(text, err = false) { $('msg').textContent = text; $('msg').className = err ? 'err' : ''; }
+
+async function load() {
+  try {
+    const d = await api('/api/cameras');
+    cams = d.cameras.map(c => ({ ...c, password:'' }));
+    $('du').value = d.defaultUser || 'admin';
+    if (d.hasDefaultPassword) $('dp').placeholder = '•••• (mantida)';
+    $('tour').value = String(d.tourSeconds || 0);
+    $('tourMode').value = d.tourMode || 'page';
+    render();
+    if (!cams.length) setMsg('Nenhuma câmera ainda. Toque em "Procurar na rede".');
+  } catch (e) { setMsg(e.message, true); }
+}
+
+async function scan() {
+  $('found').innerHTML = '<p>Procurando câmeras na rede…</p>';
+  try {
+    const d = await api('/api/scan');
+    const have = new Set(cams.map(c => c.host));
+    const ips = d.hosts.filter(h => !have.has(h));
+    $('found').innerHTML = ips.length
+      ? '<p>Encontradas. Toque para adicionar:</p>' + ips.map(h => `<span class="chip" onclick="add('${h}');this.remove()">+ ${h}</span>`).join('')
+      : '<p>Nenhuma câmera nova encontrada.</p>';
+  } catch (e) { $('found').innerHTML = '<p>' + esc(e.message) + '</p>'; }
+}
+
+async function save() {
+  const over = Object.entries(perPage()).find(([, n]) => n > MAX_PER_PAGE);
+  if (over) return setMsg(`A página ${over[0]} tem ${over[1]} câmeras. O Fire Stick mostra no máximo ${MAX_PER_PAGE} por página.`, true);
+  if (cams.length && !cams.some(c => +c.page > 0)) return setMsg('Todas as câmeras estão como "Não exibir".', true);
+  setMsg('Salvando…');
+  try {
+    const d = await api('/api/cameras', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ defaultUser: $('du').value, defaultPassword: $('dp').value,
+                             tourSeconds: Number($('tour').value), tourMode: $('tourMode').value, cameras: cams }),
+    });
+    setMsg(`✅ ${d.saved} câmera(s) salva(s). Veja na TV!`);
+  } catch (e) { setMsg(e.message, true); }
+}
+
+load();
+</script>
+</body>
+</html>

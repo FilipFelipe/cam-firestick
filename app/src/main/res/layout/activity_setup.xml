@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F1418"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="48dp">
+
+    <ImageView
+        android:id="@+id/setup_qr"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        android:contentDescription="QR code" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Configurar câmeras"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:lineSpacingExtra="6dp"
+            android:text="1. Conecte o celular no mesmo Wi-Fi\n2. Aponte a câmera do celular para o QR code\n3. Adicione as câmeras e toque em Salvar"
+            android:textColor="#C8D3DB"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/setup_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="#2EA8FF"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/setup_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textColor="#8A99A6"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Dica: o botão ☰ do controle abre esta tela a qualquer momento."
+            android:textColor="#8A99A6"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>
