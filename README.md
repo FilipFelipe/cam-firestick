@@ -107,6 +107,19 @@ The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
    adb install -r app/build/outputs/apk/debug/app-debug.apk
    ```
 
+## Releasing
+
+Releases are built and published by GitHub Actions (`.github/workflows/release.yml`):
+
+```sh
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+- **Version**: the workflow takes it from the tag (`v0.2.0` becomes versionName `0.2.0` and versionCode `200`).
+- **Signing**: it signs the APK with the release key stored in the repository secrets `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.
+- **Release notes**: it uses `docs/release-notes/<tag>.md` if that file exists and appends the SHA-256.
+
 ## How it works
 
 | File | Role |

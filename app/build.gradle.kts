@@ -5,8 +5,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-val appVersionName = "0.1.0"
-val appVersionCode = 1
+// Versão: no GitHub Actions vem da tag (v1.2.3 -> 1.2.3 / 10203). Localmente usa o padrão abaixo.
+val appVersionName = (findProperty("appVersionName") as String?) ?: "0.1.0"
+val appVersionCode = (findProperty("appVersionCode") as String?)?.toInt() ?: 100
 
 // Chave de release: keystore.properties na raiz (NÃO versionado). Sem ele, o release usa a chave de debug.
 val keystoreProps = Properties().apply {

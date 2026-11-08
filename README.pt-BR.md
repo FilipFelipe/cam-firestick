@@ -107,6 +107,19 @@ O APK sai em `app/build/outputs/apk/debug/app-debug.apk`.
    adb install -r app/build/outputs/apk/debug/app-debug.apk
    ```
 
+## Lançar uma versão
+
+As versões são compiladas e publicadas pelo GitHub Actions (`.github/workflows/release.yml`):
+
+```sh
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+- **Versão**: o workflow pega da tag (`v0.2.0` vira o versionName `0.2.0` e o versionCode `200`).
+- **Assinatura**: ele assina o APK com a chave de release guardada nos secrets do repositório: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS` e `KEY_PASSWORD`.
+- **Notas da versão**: ele usa `docs/release-notes/<tag>.md` se o arquivo existir e acrescenta o SHA-256.
+
 ## Como funciona
 
 | Arquivo | Função |
