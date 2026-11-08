@@ -45,15 +45,22 @@ Depois de instalar, abra o **Central de Câmeras**. Ele mostra um QR code: leia 
   - Coloca cada câmera numa página, define a ordem e gira a imagem (0°/90°/180°/270°).
 - **Reconexão automática**: o RTSP vai por TCP com buffer curto para ter pouco atraso, e um stream que cai tenta de novo a cada 3 segundos.
 
-<p align="center">
-  <img src="docs/screenshots/tv-setup-qr.png" width="480" alt="Tela do QR code na TV">
-  &nbsp;
-  <img src="docs/screenshots/phone-setup.png" width="220" alt="Página de configuração no celular">
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/tv-fullscreen.png" width="480" alt="Câmera em tela cheia com indicador">
-</p>
+<table>
+  <tr>
+    <th>TV: QR code e tela cheia</th>
+    <th>Celular: página de configuração</th>
+  </tr>
+  <tr>
+    <td width="72%" valign="top">
+      <img src="docs/screenshots/tv-setup-qr.png" width="100%" alt="Tela do QR code na TV">
+      <br><br>
+      <img src="docs/screenshots/tv-fullscreen.png" width="100%" alt="Câmera em tela cheia com indicador">
+    </td>
+    <td width="28%" valign="top">
+      <img src="docs/screenshots/phone-setup.png" width="100%" alt="Página de configuração no celular">
+    </td>
+  </tr>
+</table>
 
 ## Controle remoto
 

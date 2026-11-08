@@ -45,15 +45,22 @@ After installing, open **Central de Câmeras**. It shows a QR code: scan it with
   - Assign each camera to a page, set its order and rotate it (0°/90°/180°/270°).
 - **Auto-reconnect**: RTSP runs over TCP with a small buffer for low latency, and a dropped stream retries every 3 seconds.
 
-<p align="center">
-  <img src="docs/screenshots/tv-setup-qr.png" width="480" alt="QR code setup screen on the TV">
-  &nbsp;
-  <img src="docs/screenshots/phone-setup.png" width="220" alt="Setup page on the phone">
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/tv-fullscreen.png" width="480" alt="Fullscreen camera with indicator">
-</p>
+<table>
+  <tr>
+    <th>TV: QR code setup and fullscreen</th>
+    <th>Phone: setup page</th>
+  </tr>
+  <tr>
+    <td width="72%" valign="top">
+      <img src="docs/screenshots/tv-setup-qr.png" width="100%" alt="QR code setup screen on the TV">
+      <br><br>
+      <img src="docs/screenshots/tv-fullscreen.png" width="100%" alt="Fullscreen camera with indicator">
+    </td>
+    <td width="28%" valign="top">
+      <img src="docs/screenshots/phone-setup.png" width="100%" alt="Setup page on the phone">
+    </td>
+  </tr>
+</table>
 
 ## Remote control
 
